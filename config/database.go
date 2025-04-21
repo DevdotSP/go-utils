@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/DevdotSP/go-utils/utils" // Update with your actual repo path
 	"github.com/jackc/pgx/v5/pgxpool"
-	utils "github.com/DevdotSP/go-utils/utils" // Update with your actual repo path
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -49,7 +49,6 @@ func PostgreSQLConnect() {
 	log.Println("✅ pgx connection pool initialized")
 }
 
-
 // FetchParam fetches parameters dynamically from a given database connection.
 func FetchParam(db *gorm.DB, tableName, columnName, columnValue string, columnToSelect []string) (map[string]interface{}, error) {
 	var results []map[string]interface{}
@@ -68,4 +67,54 @@ func FetchParam(db *gorm.DB, tableName, columnName, columnValue string, columnTo
 	}
 
 	return results[0], nil
+}
+
+// UpdateRecord updates a record in the database using a transaction (tx).
+func UpdateRecordTX[T any](tx *gorm.DB, model *T, column any, value any, updates map[string]interface{}) error {
+	var valueStr string
+
+	// Convert value to string or int for the query
+	switch v := value.(type) {
+	case string:
+		valueStr = v
+	case int:
+		valueStr = fmt.Sprintf("%d", v)
+	default:
+		return fmt.Errorf("unsupported value type: %T", value)
+	}
+
+	// Convert column to string and ensure proper formatting for SQL query
+	columnStr, ok := column.(string)
+	if !ok {
+		return fmt.Errorf("column must be a string, got %T", column)
+	}
+
+	// Perform the update query within the transaction
+	result := tx.Model(model).Where(fmt.Sprintf("%s = ?", columnStr), valueStr).Updates(updates)
+	return result.Error
+}
+
+// UpdateRecord updates a record in the database based on a given condition.
+func UpdateRecord[T any](model *T, column any, value any, updates map[string]interface{}) error {
+	var valueStr string
+
+	// Convert value to string or int for the query
+	switch v := value.(type) {
+	case string:
+		valueStr = v
+	case int:
+		valueStr = fmt.Sprintf("%d", v)
+	default:
+		return fmt.Errorf("unsupported value type: %T", value)
+	}
+
+	// Convert column to string and ensure proper formatting for SQL query
+	columnStr, ok := column.(string)
+	if !ok {
+		return fmt.Errorf("column must be a string, got %T", column)
+	}
+
+	// Perform the update query
+	result := DB.Model(model).Where(fmt.Sprintf("%s = ?", columnStr), valueStr).Updates(updates)
+	return result.Error
 }

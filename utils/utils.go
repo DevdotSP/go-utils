@@ -3,13 +3,30 @@ package utils
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"fmt"
 	"log"
 	"math/big"
 	"os"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v3"
 	"golang.org/x/crypto/bcrypt"
+)
+
+
+const (
+	lowerChars   = "abcdefghijklmnopqrstuvwxyz"
+	upperChars   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	digitChars   = "0123456789"
+	specialChars = "!@#$%^&*"
+	allChars     = lowerChars + upperChars + digitChars + specialChars
+)
+
+var (
+	slugRegex = regexp.MustCompile(`[^a-z0-9]+`)
+	emailRegex = regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$`)
 )
 
 // HashPassword encrypts the password using bcrypt
@@ -66,13 +83,7 @@ func ExtractToken(headers map[string]string) (string, error) {
 	return token[7:], nil
 }
 
-const (
-	lowerChars   = "abcdefghijklmnopqrstuvwxyz"
-	upperChars   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	digitChars   = "0123456789"
-	specialChars = "!@#$%^&*"
-	allChars     = lowerChars + upperChars + digitChars + specialChars
-)
+
 
 func GenerateRandomPassword() string {
 	length := 6 + randInt(3) // Random length between 6 and 8
@@ -108,4 +119,57 @@ func shuffle(data []byte) {
 		j := randInt(len(data))
 		data[i], data[j] = data[j], data[i]
 	}
+}
+
+
+func GenerateUUID() string {
+	b := make([]byte, 16)
+	rand.Read(b)
+	// Set version (4) and variant bits
+	b[6] = (b[6] & 0x0f) | 0x40
+	b[8] = (b[8] & 0x3f) | 0x80
+	return fmt.Sprintf("%08x-%04x-%04x-%04x-%012x",
+		b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
+}
+
+
+func IsValidEmail(email string) bool {
+	return emailRegex.MatchString(email)
+}
+
+// Invalid password, should have at least 8 characters long, a mix of uppercase and lowercase letters and at least one special character (@ or .)
+// Validate password
+func IsPasswordValid(password string) bool {
+	hasEightLen := false
+	hasUpperChar := false
+	hasLowerChar := false
+	hasSpecialChar := false
+	if len(password) >= 8 {
+		hasEightLen = true
+	}
+
+	upperString := regexp.MustCompile(`[A-Z]`)
+	lowerString := regexp.MustCompile(`[a-z]`)
+	specialString := regexp.MustCompile(`[!@#$%^&*(.)]`)
+
+	hasUpperChar = upperString.MatchString(password)
+	hasLowerChar = lowerString.MatchString(password)
+	hasSpecialChar = specialString.MatchString(password)
+
+	return hasEightLen && hasUpperChar && hasLowerChar && hasSpecialChar
+}
+
+func CurrentTimestamp() string {
+	return time.Now().Format("2006-01-02 15:04:05")
+}
+
+
+func SlugifyString(input string) string {
+	s := strings.ToLower(input)
+	s = slugRegex.ReplaceAllString(s, "-")
+	return strings.Trim(s, "-")
+}
+
+func ToTitleCase(input string) string {
+	return strings.Title(strings.ToLower(input))
 }

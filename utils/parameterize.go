@@ -16,9 +16,11 @@ func GetParamValue(result map[string]interface{}, key string) (string, error) {
 	return value, nil
 }
 
+//example of columnToSelect []string{"api"} 
+
 // GetGCSPATH fetches the 'api' value from Oasis parameters
-func GetGCSPATH(db *gorm.DB, description string) (string, error) {
-	result, err := bloc.FetchParam(db, "oasis.system_parameters", "description", description, []string{"api"})
+func GetGCSPATH(db *gorm.DB, tableName, columnName, columnValue string, columnToSelect []string) (string, error) {
+	result, err := bloc.FetchParam(db, tableName,  columnName, columnValue, columnToSelect)
 	if err != nil {
 		return "", err
 	}
@@ -30,10 +32,12 @@ func GetGCSPATH(db *gorm.DB, description string) (string, error) {
 
 	return api, nil
 }
+
+//example of columnToSelect []string{"api"} 
 
 // GetAllAPI fetches the 'api' value from the API table
-func GetAllAPI(db *gorm.DB, code string) (string, error) {
-	result, err := bloc.FetchParam(db, "rose_v3.rose_api", "code", code, []string{"api"})
+func GetAllAPI(db *gorm.DB, tableName, columnName, columnValue string, columnToSelect []string) (string, error) {
+	result, err := bloc.FetchParam(db, tableName, columnName, columnValue, columnToSelect)
 	if err != nil {
 		return "", err
 	}
@@ -46,9 +50,11 @@ func GetAllAPI(db *gorm.DB, code string) (string, error) {
 	return api, nil
 }
 
+//example of columnToSelect []string{"key", "value"} 
+
 // GetSystemParam fetches 'key' and 'value' from the system parameters table
-func GetSystemParam(db *gorm.DB, code string) (string, string, error) {
-	result, err := bloc.FetchParam(db, "rose_v3.system_parameter", "code", code, []string{"key", "value"})
+func GetSystemParam(db *gorm.DB, tableName, columnName, columnValue string, columnToSelect []string) (string, string, error) {
+	result, err := bloc.FetchParam(db, tableName, columnName, columnValue, columnToSelect )
 	if err != nil {
 		return "", "", err
 	}
