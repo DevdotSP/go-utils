@@ -3,7 +3,7 @@ package utils
 import (
 	"fmt"
 
-	"github.com/DevdotSP/go-utils/bloc"
+	"github.com/DevdotSP/go-utils/fetchparam"
 	"gorm.io/gorm"
 )
 
@@ -16,11 +16,11 @@ func GetParamValue(result map[string]interface{}, key string) (string, error) {
 	return value, nil
 }
 
-//example of columnToSelect []string{"api"}
+//example of columnToSelect []string{"api"} 
 
 // GetGCSPATH fetches the 'api' value from Oasis parameters
 func GetGCSPATH(db *gorm.DB, tableName, columnName, columnValue string, columnToSelect []string) (string, error) {
-	result, err := bloc.FetchParam(db, tableName, columnName, columnValue, columnToSelect)
+	result, err := fetchparam.FetchParam(db, tableName,  columnName, columnValue, columnToSelect)
 	if err != nil {
 		return "", err
 	}
@@ -33,11 +33,11 @@ func GetGCSPATH(db *gorm.DB, tableName, columnName, columnValue string, columnTo
 	return api, nil
 }
 
-//example of columnToSelect []string{"api"}
+//example of columnToSelect []string{"api"} 
 
 // GetAllAPI fetches the 'api' value from the API table
 func GetAllAPI(db *gorm.DB, tableName, columnName, columnValue string, columnToSelect []string) (string, error) {
-	result, err := bloc.FetchParam(db, tableName, columnName, columnValue, columnToSelect)
+	result, err := fetchparam.FetchParam(db, tableName, columnName, columnValue, columnToSelect)
 	if err != nil {
 		return "", err
 	}
@@ -50,11 +50,11 @@ func GetAllAPI(db *gorm.DB, tableName, columnName, columnValue string, columnToS
 	return api, nil
 }
 
-//example of columnToSelect []string{"key", "value"}
+//example of columnToSelect []string{"key", "value"} 
 
 // GetSystemParam fetches 'key' and 'value' from the system parameters table
 func GetSystemParam(db *gorm.DB, tableName, columnName, columnValue string, columnToSelect []string) (string, string, error) {
-	result, err := bloc.FetchParam(db, tableName, columnName, columnValue, columnToSelect)
+	result, err := fetchparam.FetchParam(db, tableName, columnName, columnValue, columnToSelect )
 	if err != nil {
 		return "", "", err
 	}

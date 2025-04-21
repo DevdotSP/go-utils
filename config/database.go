@@ -49,25 +49,7 @@ func PostgreSQLConnect() {
 	log.Println("✅ pgx connection pool initialized")
 }
 
-// FetchParam fetches parameters dynamically from a given database connection.
-func FetchParam(db *gorm.DB, tableName, columnName, columnValue string, columnToSelect []string) (map[string]interface{}, error) {
-	var results []map[string]interface{}
 
-	err := db.Table(tableName).
-		Where(columnName+" = ?", columnValue).
-		Select(columnToSelect).
-		Find(&results).Error
-
-	if err != nil {
-		return nil, err
-	}
-
-	if len(results) == 0 {
-		return nil, fmt.Errorf("no results found")
-	}
-
-	return results[0], nil
-}
 
 // UpdateRecord updates a record in the database using a transaction (tx).
 func UpdateRecordTX[T any](tx *gorm.DB, model *T, column any, value any, updates map[string]interface{}) error {
@@ -118,3 +100,5 @@ func UpdateRecord[T any](model *T, column any, value any, updates map[string]int
 	result := DB.Model(model).Where(fmt.Sprintf("%s = ?", columnStr), valueStr).Updates(updates)
 	return result.Error
 }
+
+

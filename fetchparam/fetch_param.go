@@ -1,7 +1,8 @@
-package bloc
+package fetchparam
 
 import (
 	"fmt"
+
 	"gorm.io/gorm"
 )
 
