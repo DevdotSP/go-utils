@@ -2,7 +2,8 @@ package utils
 
 import (
 	"fmt"
-	"github.com/DevdotSP/go-utils/bloc"  // Correct import path
+
+	bloc "github.com/DevdotSP/go-utils/bloc"
 	"gorm.io/gorm"
 )
 
