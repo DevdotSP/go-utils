@@ -21,7 +21,7 @@ func PostgreSQLConnect() {
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 		utils.GetEnv("DB_HOST", "localhost"),
 		utils.GetEnv("DB_USER", "postgres"),
-		utils.GetEnv("DB_PASSWORD", "password"),
+		utils.GetEnv("DB_PASSWORD", "@Light1114"),
 		utils.GetEnv("DB_NAME", "portfolio"),
 		utils.GetEnv("DB_PORT", "5432"),
 	)
@@ -29,7 +29,7 @@ func PostgreSQLConnect() {
 	pgxDSN := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s",
 		utils.GetEnv("DB_USER", "postgres"),
-		utils.GetEnv("DB_PASSWORD", "password"),
+		utils.GetEnv("DB_PASSWORD", "@Light1114"),
 		utils.GetEnv("DB_HOST", "localhost"),
 		utils.GetEnv("DB_PORT", "5432"),
 		utils.GetEnv("DB_NAME", "portfolio"),
