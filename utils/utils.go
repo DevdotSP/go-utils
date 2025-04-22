@@ -14,6 +14,8 @@ import (
 	"github.com/gofiber/fiber/v3"
 	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 
@@ -186,6 +188,16 @@ func SlugifyString(input string) string {
 	return strings.Trim(s, "-")
 }
 
+func IsUniqueConstraintError(err error) bool {
+	// Check if error contains specific keywords indicating a unique constraint violation
+	return err != nil && (strings.Contains(err.Error(), "unique constraint"))
+}
+
 func ToTitleCase(input string) string {
-	return strings.Title(strings.ToLower(input))
+	caser := cases.Title(language.English)
+	return caser.String(strings.ToLower(input))
+}
+
+func Print[T any](val T) {
+	fmt.Println(val)
 }
