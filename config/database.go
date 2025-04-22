@@ -49,8 +49,6 @@ func PostgreSQLConnect() {
 	log.Println("✅ pgx connection pool initialized")
 }
 
-
-
 // UpdateRecord updates a record in the database using a transaction (tx).
 func UpdateRecordTX[T any](tx *gorm.DB, model *T, column any, value any, updates map[string]interface{}) error {
 	var valueStr string
@@ -71,9 +69,20 @@ func UpdateRecordTX[T any](tx *gorm.DB, model *T, column any, value any, updates
 		return fmt.Errorf("column must be a string, got %T", column)
 	}
 
-	// Perform the update query within the transaction
+	// Attempt to find the record first
 	result := tx.Model(model).Where(fmt.Sprintf("%s = ?", columnStr), valueStr).Updates(updates)
-	return result.Error
+	if result.Error != nil {
+		return fmt.Errorf("failed to update record: %w", result.Error)
+	}
+
+	// If no records were updated, insert a new one
+	if result.RowsAffected == 0 {
+		if err := tx.Create(model).Error; err != nil {
+			return fmt.Errorf("failed to insert new record: %w", err)
+		}
+	}
+
+	return nil
 }
 
 // UpdateRecord updates a record in the database based on a given condition.
@@ -98,7 +107,14 @@ func UpdateRecord[T any](model *T, column any, value any, updates map[string]int
 
 	// Perform the update query
 	result := DB.Model(model).Where(fmt.Sprintf("%s = ?", columnStr), valueStr).Updates(updates)
+
+	// If no rows were affected, insert a new record
+	if result.RowsAffected == 0 {
+		// Insert new record
+		if err := DB.Create(model).Error; err != nil {
+			return fmt.Errorf("failed to insert new record: %w", err)
+		}
+	}
+
 	return result.Error
 }
-
-
