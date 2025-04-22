@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -47,6 +48,21 @@ func CompareData(hashedData, plainData string) bool {
 // GeneratePasswordExpiry sets password expiry (default: 90 days)
 func GeneratePasswordExpiry() time.Time {
 	return time.Now().AddDate(0, 3, 0) // Expires in 3 months
+}
+
+// LoadEnv loads environment variables from a .env file.
+// It logs an error and stops execution if it can't load the .env file.
+func LoadEnv() error {
+	// Load the environment variables from the .env file
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+		return fmt.Errorf("Error loading .env file")
+	}
+	log.Println("Environment variables loaded successfully")
+
+	// Optionally, check if any required variables are missing
+	return nil
 }
 
 // GetEnv returns the value of the environment variable or a default value.
