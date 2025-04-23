@@ -52,6 +52,10 @@ func GeneratePasswordExpiry() time.Time {
 	return time.Now().AddDate(0, 3, 0) // Expires in 3 months
 }
 
+func GenerateTokenExpiry() time.Time {
+	return time.Now().Add(5 * time.Minute) // Expires in 5 months
+}
+
 // LoadEnv loads environment variables from a .env file.
 // It logs an error and stops execution if it can't load the .env file.
 func LoadEnv() error {
