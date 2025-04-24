@@ -97,13 +97,15 @@ func GenerateVerificationToken() string {
 
 
 // Helper function to extract the JWT from the Authorization header
-func ExtractToken(headers map[string]string) (string, error) {
-	token := headers["Authorization"]
+// Helper function to extract the JWT from the Authorization header
+func ExtractToken(ctx fiber.Ctx) (string, error) {
+	token := ctx.Get("Authorization")
 	if token == "" || len(token) < 7 || token[:7] != "Bearer " {
 		return "", fiber.NewError(fiber.StatusUnauthorized, "No token provided")
 	}
 	return token[7:], nil
 }
+
 
 
 

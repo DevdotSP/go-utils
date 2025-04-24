@@ -88,16 +88,16 @@ func ValidateToken(token string) (jwt.MapClaims, error) {
 	return nil, ErrInvalidToken
 }
 
-// ExtractCustomerIDFromToken extracts the customer_id from JWT
+// ExtractCustomerIDFromToken extracts the user_id from JWT
 func ExtractCustomerIDFromToken(tokenString string) (uint, error) {
 	claims, err := ValidateToken(tokenString)
 	if err != nil {
 		return 0, err
 	}
 
-	customerID, ok := claims["customer_id"].(float64)
+	customerID, ok := claims["user_id"].(float64)
 	if !ok {
-		return 0, errors.New("invalid or missing customer_id in token")
+		return 0, errors.New("invalid or missing user_id in token")
 	}
 
 	return uint(customerID), nil
