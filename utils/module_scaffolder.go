@@ -36,7 +36,7 @@ func GenerateModule() error {
 
 	module = strings.ToLower(module)
 	// Define the full path for the new module inside services
-	basePath := fmt.Sprintf("%s/package/services/%s", baseDir, module)
+	basePath := fmt.Sprintf("%s/%s", baseDir, module)
 
 	// Iterate through the folder structure
 	for folder, files := range structure {
