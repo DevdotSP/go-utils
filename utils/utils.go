@@ -18,7 +18,6 @@ import (
 	"golang.org/x/text/language"
 )
 
-
 const (
 	lowerChars   = "abcdefghijklmnopqrstuvwxyz"
 	upperChars   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -28,7 +27,7 @@ const (
 )
 
 var (
-	slugRegex = regexp.MustCompile(`[^a-z0-9]+`)
+	slugRegex  = regexp.MustCompile(`[^a-z0-9]+`)
 	emailRegex = regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$`)
 )
 
@@ -87,7 +86,6 @@ func GetResponseTime(c fiber.Ctx) string {
 	return connTime.Format(time.DateTime)
 }
 
-
 // generateVerificationToken creates a random verification token
 func GenerateVerificationToken() string {
 	b := make([]byte, 16) // 16 bytes for a 32-character hex string
@@ -95,6 +93,16 @@ func GenerateVerificationToken() string {
 	return hex.EncodeToString(b)
 }
 
+func GetCurrentDirectory() {
+	dir, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	// Print the current working directory
+	fmt.Println("Current directory:", dir)
+}
 
 // Helper function to extract the JWT from the Authorization header
 // Helper function to extract the JWT from the Authorization header
@@ -105,9 +113,6 @@ func ExtractToken(ctx fiber.Ctx) (string, error) {
 	}
 	return token[7:], nil
 }
-
-
-
 
 func GenerateRandomPassword() string {
 	length := 6 + randInt(3) // Random length between 6 and 8
@@ -145,7 +150,6 @@ func shuffle(data []byte) {
 	}
 }
 
-
 func GenerateUUID() string {
 	b := make([]byte, 16)
 	rand.Read(b)
@@ -155,7 +159,6 @@ func GenerateUUID() string {
 	return fmt.Sprintf("%08x-%04x-%04x-%04x-%012x",
 		b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
 }
-
 
 func IsValidEmail(email string) bool {
 	return emailRegex.MatchString(email)
@@ -186,7 +189,6 @@ func IsPasswordValid(password string) bool {
 func CurrentTimestamp() string {
 	return time.Now().Format("2006-01-02 15:04:05")
 }
-
 
 func SlugifyString(input string) string {
 	s := strings.ToLower(input)
