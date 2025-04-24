@@ -3,9 +3,9 @@ package utils
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
-	"github.com/joho/godotenv"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -18,55 +18,50 @@ var structure = map[string][]string{
 	"routes":       {"routes.go"},
 }
 
-// GenerateModule creates a module folder with boilerplate files.
-func GenerateModule() error {
-	// Load environment variables from .env file
-	if err := godotenv.Load(); err != nil {
-		return fmt.Errorf("error loading .env file")
-	}
-
-	// Get base directory and module name from environment variables
-	baseDir := os.Getenv("BASE_DIR")
-	module := os.Getenv("MODULE_NAME")
-
-	// If either baseDir or module name is missing, return an error
-	if baseDir == "" || module == "" {
-		return fmt.Errorf("BASE_DIR and MODULE_NAME must be set in the environment variables")
+// GenerateModule creates a module folder under package/services/{moduleName}
+func GenerateModule(module string) error {
+	if module == "" {
+		return fmt.Errorf("module name is required")
 	}
 
 	module = strings.ToLower(module)
-	// Define the full path for the new module inside services
-	basePath := fmt.Sprintf("%s/%s", baseDir, module)
 
-	// Iterate through the folder structure
+	// Get current working directory
+	cwd, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("failed to get current directory: %w", err)
+	}
+
+	// Build base path: {cwd}/package/services/{module}
+	basePath := filepath.Join(cwd, "package", "services", module)
+
+	// Create folders and files
 	for folder, files := range structure {
-		fullPath := fmt.Sprintf("%s/%s", basePath, folder)
+		fullPath := filepath.Join(basePath, folder)
 		if err := os.MkdirAll(fullPath, os.ModePerm); err != nil {
 			return fmt.Errorf("failed to create folder %s: %w", fullPath, err)
 		}
 
-		// Create and write the files inside each folder
 		for _, file := range files {
-			filePath := fmt.Sprintf("%s/%s", fullPath, file)
+			filePath := filepath.Join(fullPath, file)
 			f, err := os.Create(filePath)
 			if err != nil {
 				return fmt.Errorf("failed to create file %s: %w", filePath, err)
 			}
 			defer f.Close()
-			_, err = f.WriteString(generateBoilerplate(module, file)) // Removed 'folder'
+
+			_, err = f.WriteString(generateBoilerplate(module, file))
 			if err != nil {
-				return fmt.Errorf("failed to write boilerplate to file %s: %w", filePath, err)
+				return fmt.Errorf("failed to write to file %s: %w", filePath, err)
 			}
 		}
 	}
 
-	fmt.Printf("Module '%s' generated successfully.\n", module)
+	fmt.Printf("Module '%s' created in 'package/services/%s'\n", module, module)
 	return nil
 }
 
-// generateBoilerplate generates the boilerplate code for a given file.
 func generateBoilerplate(module, file string) string {
-	// Capitalize module name for PascalCase format
 	modulePascal := cases.Title(language.English).String(strings.ReplaceAll(module, "_", " "))
 
 	switch file {
