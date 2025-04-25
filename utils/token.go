@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"errors"
 	"log"
 	"os"
@@ -116,23 +117,30 @@ func DeleteToken(token string) error {
 }
 
 // CleanupExpiredTokens periodically removes expired tokens
-func CleanupExpiredTokens() {
+func CleanupExpiredTokens(ctx context.Context) {
 	for {
-		time.Sleep(10 * time.Minute) // Adjust as needed
-		now := time.Now()
-
-		activeTokens.Range(func(key, value interface{}) bool {
-			tokenInfo := value.(TokenInfo)
-			if tokenInfo.Expiration.Before(now) {
-				activeTokens.Delete(key)
-				log.Printf("Expired token %s removed.", key)
-			}
-			return true
-		})
+		select {
+		case <-time.After(10 * time.Minute): // Adjust as needed
+			now := time.Now()
+			activeTokens.Range(func(key, value interface{}) bool {
+				tokenInfo := value.(TokenInfo)
+				if tokenInfo.Expiration.Before(now) {
+					activeTokens.Delete(key)
+					log.Printf("Expired token %s removed.", key)
+				}
+				return true
+			})
+		case <-ctx.Done():
+			log.Println("Cleanup routine stopped.")
+			return
+		}
 	}
 }
 
 // StartCleanupRoutine runs CleanupExpiredTokens in the background
-func StartCleanupRoutine() {
-	go CleanupExpiredTokens()
+func StartCleanupRoutine() context.CancelFunc {
+	ctx, cancel := context.WithCancel(context.Background())
+	go CleanupExpiredTokens(ctx)
+	return cancel
 }
+
