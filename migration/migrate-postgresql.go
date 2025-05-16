@@ -23,6 +23,9 @@ func MigrationTable() {
 		&sharedModels.UserRoleSidebar{},
 		&sharedModels.UserImage{},  // ✅ Move UserImage after User
 		&sharedModels.Notification{}, // ✅ Move Notification after User
+		&sharedModels.PasswordResetToken{},
+		&sharedModels.Advertisement{},
+		&sharedModels.UserExportRequest{},
 	)
 	if err != nil {
 		log.Fatal("❌ AutoMigrate failed:", err)
