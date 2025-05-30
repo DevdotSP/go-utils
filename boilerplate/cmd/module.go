@@ -98,7 +98,10 @@ func generateBoilerplate(module, file string) string {
 
 import (
 	"github.com/gofiber/fiber/v3"
+	"github.com/DevdotSP/go-utils/helper"
+	"github.com/DevdotSP/go-utils/respcode"
 	"%s/%s/services"
+	"%s/%s/models"
 )
 
 type Controller struct {
@@ -119,19 +122,32 @@ func (ctl *Controller) Show(c fiber.Ctx) error {
 }
 
 func (ctl *Controller) Store(c fiber.Ctx) error {
-	return c.JSON(fiber.Map{"message": "Store new %s"})
+		var request models.%s
+		if err := c.Bind().Body(&request); err != nil {
+		return helper.JSONResponseWithData(c, respcode.ERR_CODE_400, "Invalid input", nil)
+	}
+
+	// Call the service layer to process the role creation
+
+	return helper.JSONResponse(c, respcode.SUC_CODE_201, "%s store successfully")
 }
 
 func (ctl *Controller) Update(c fiber.Ctx) error {
 	id := c.Params("id")
-	return c.JSON(fiber.Map{"message": "Update %s", "id": id})
+		var request models.%s
+		if err := c.Bind().Body(&request); err != nil {
+		return helper.JSONResponse(c, respcode.ERR_CODE_400, "Invalid input")
+	}
+
+
+	return helper.JSONResponse(c, respcode.SUC_CODE_204, "%s update successfully with ID" + id)
 }
 
 func (ctl *Controller) Delete(c fiber.Ctx) error {
 	id := c.Params("id")
 	return c.JSON(fiber.Map{"message": "Delete %s", "id": id})
 }
-`, basePath, module, module, module, module, module, module)
+`, basePath, module, basePath, module, module, module, capitalModule, module, capitalModule, module, module)
 
 	case "interface.go":
 		return fmt.Sprintf(`package repositories
@@ -236,5 +252,3 @@ func Register%sRoute(app fiber.Router) {
 
 	return ""
 }
-
-
